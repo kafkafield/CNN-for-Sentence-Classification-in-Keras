@@ -58,12 +58,12 @@ model_variation = 'CNN-rand'  #  CNN-rand | CNN-non-static | CNN-static
 print('Model variation is %s' % model_variation)
 
 # Model Hyperparameters
-sequence_length = 56
 embedding_dim = 20          
 filter_sizes = (3, 4)
-num_filters = 150
-dropout_prob = (0.25, 0.5)
-hidden_dims = 150
+num_filters = 3
+dropout_prob = (0.7, 0.8)
+hidden_dims = 100
+sequence_length = 56
 
 # Training parameters
 batch_size = 32
@@ -79,7 +79,7 @@ context = 10        # Context window size
 #
 # Load data
 print("Loading data...")
-x, y, vocabulary, vocabulary_inv = data_helpers.load_data()
+x, y, vocabulary, vocabulary_inv = data_helpers.load_data_chinese()
 
 if model_variation=='CNN-non-static' or model_variation=='CNN-static':
     embedding_weights = train_word2vec(x, vocabulary_inv, embedding_dim, min_word_count, context)
@@ -132,8 +132,8 @@ model.add(Dense(hidden_dims))
 model.add(Dropout(dropout_prob[1]))
 model.add(Activation('relu'))
 model.add(Dense(1))
-model.add(Activation('sigmoid'))
-model.compile(loss='binary_crossentropy', optimizer='rmsprop', metrics=['accuracy'])
+model.add(Activation('softmax'))
+model.compile(loss='categorical_crossentropy', optimizer='rmsprop', metrics=['accuracy'])
 
 # Training model
 # ==================================================

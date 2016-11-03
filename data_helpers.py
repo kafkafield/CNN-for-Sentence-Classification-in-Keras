@@ -1,3 +1,4 @@
+# encoding=utf-8
 import numpy as np
 import re
 import itertools
@@ -114,3 +115,63 @@ def batch_iter(data, batch_size, num_epochs):
             start_index = batch_num * batch_size
             end_index = min((batch_num + 1) * batch_size, data_size)
             yield shuffled_data[start_index:end_index]
+
+import jieba
+import csv
+
+def load_data_and_labels_chinese():
+    dirs = ['./data/business.csv', 
+        './data/service.csv', 
+        './data/others.csv', 
+        './data/service.csv', 
+        './data/platform.csv']
+    
+    x_text = []
+    y = []
+
+    label = -1;
+    for dir in dirs:
+        label += 1
+        with open(dir, 'rb') as f:
+            reader = csv.reader(f)
+            all_list = list(reader)
+        for sentence in all_list:
+            print sentence
+            if sentence[3] == 'sentence':
+                continue
+            seq_list = jieba.cut(sentence[3])
+            x_text.append(list(seq_list))
+            y.append(label)
+    return x_text, y
+
+
+def pad_sentences_chinese(x_text, pad_word='<PAD>'):
+    pad_x_text = []
+    sequence_length = max(len(x) for x in x_text)
+    for i in range(len(x_text)):
+        x = x_text[i]
+        padding = sequence_length - len(x)
+        new_x = x + [pad_word] * padding
+        pad_x_text.append(new_x)
+    return pad_x_text
+
+
+def build_vocab_chinese(x_text):
+    word_counts = Counter(itertools.chain(*x_text))
+    vocabulary_inv = [x[0] for x in word_counts.most_common()]
+    vocabulary = {x: i for i, x in enumerate(vocabulary_inv)}
+    return vocabulary, vocabulary_inv
+
+
+def build_input_data_chinese(sentences, labels, vocabulary):
+    x = np.array([[vocabulary[word] for word in sentence] for sentence in sentences])
+    y = np.array(labels)
+    return x, y
+
+
+def load_data_chinese():
+    sentences, labels = load_data_and_labels_chinese()
+    sentences_padded = pad_sentences_chinese(sentences)
+    vocabulary, vocabulary_inv = build_vocab_chinese(sentences_padded)
+    x, y = build_input_data(sentences_paded, labels, vocabulary)
+    return x, y, vocabulary, vocabulary_inv
