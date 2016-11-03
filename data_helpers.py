@@ -136,7 +136,6 @@ def load_data_and_labels_chinese():
             reader = csv.reader(f)
             all_list = list(reader)
         for sentence in all_list:
-            print sentence
             if sentence[3] == 'sentence':
                 continue
             seq_list = jieba.cut(sentence[3])
@@ -173,5 +172,5 @@ def load_data_chinese():
     sentences, labels = load_data_and_labels_chinese()
     sentences_padded = pad_sentences_chinese(sentences)
     vocabulary, vocabulary_inv = build_vocab_chinese(sentences_padded)
-    x, y = build_input_data(sentences_paded, labels, vocabulary)
+    x, y = build_input_data(sentences_padded, labels, vocabulary)
     return x, y, vocabulary, vocabulary_inv

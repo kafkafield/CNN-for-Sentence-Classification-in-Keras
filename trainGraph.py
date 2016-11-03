@@ -45,8 +45,13 @@ from w2v import train_word2vec
 
 from keras.models import Sequential, Model
 from keras.layers import Activation, Dense, Dropout, Embedding, Flatten, Input, Merge, Convolution1D, MaxPooling1D
+from keras.utils import np_utils
 
 np.random.seed(2)
+
+# Fix bug for Keras and Tensorflow
+import tensorflow as tf
+tf.python.control_flow_ops = tf
 
 # Parameters
 # ==================================================
@@ -54,7 +59,7 @@ np.random.seed(2)
 # Model Variations. See Kim Yoon's Convolutional Neural Networks for 
 # Sentence Classification, Section 3 for detail.
 
-model_variation = 'CNN-rand'  #  CNN-rand | CNN-non-static | CNN-static
+model_variation = 'CNN-non-static'  #  CNN-rand | CNN-non-static | CNN-static
 print('Model variation is %s' % model_variation)
 
 # Model Hyperparameters
@@ -63,7 +68,7 @@ filter_sizes = (3, 4)
 num_filters = 3
 dropout_prob = (0.7, 0.8)
 hidden_dims = 100
-sequence_length = 56
+sequence_length = 81
 
 # Training parameters
 batch_size = 32
@@ -91,9 +96,15 @@ else:
     raise ValueError('Unknown model variation')    
 
 # Shuffle data
+print x.shape
+print y.shape
 shuffle_indices = np.random.permutation(np.arange(len(y)))
 x_shuffled = x[shuffle_indices]
-y_shuffled = y[shuffle_indices].argmax(axis=1)
+y_shuffled = y[shuffle_indices]
+
+# Convert class vectors to binary class matrices
+nb_classes = 5
+y_shuffled = np_utils.to_categorical(y_shuffled, nb_classes)
 
 print("Vocabulary Size: {:d}".format(len(vocabulary)))
 
@@ -131,11 +142,11 @@ model.add(graph)
 model.add(Dense(hidden_dims))
 model.add(Dropout(dropout_prob[1]))
 model.add(Activation('relu'))
-model.add(Dense(1))
+model.add(Dense(nb_classes))
 model.add(Activation('softmax'))
 model.compile(loss='categorical_crossentropy', optimizer='rmsprop', metrics=['accuracy'])
 
 # Training model
 # ==================================================
 model.fit(x_shuffled, y_shuffled, batch_size=batch_size,
-          nb_epoch=num_epochs, validation_split=val_split, verbose=2)
+          nb_epoch=num_epochs, validation_split=val_split, verbose=1)
