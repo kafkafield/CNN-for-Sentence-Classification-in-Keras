@@ -120,6 +120,10 @@ import jieba
 import csv
 
 def load_data_and_labels_chinese():
+    """
+    x_text = [[word, word, word...], [word, word...], ...]
+    y = [label, label...]
+    """
     dirs = ['./data/business.csv', 
         './data/service.csv', 
         './data/others.csv', 
@@ -145,6 +149,9 @@ def load_data_and_labels_chinese():
 
 
 def pad_sentences_chinese(x_text, pad_word='<PAD>'):
+    """
+    x_text = [[word, word, ... <PAD>, <PAD>], ...]
+    """
     pad_x_text = []
     sequence_length = max(len(x) for x in x_text)
     for i in range(len(x_text)):
@@ -156,6 +163,10 @@ def pad_sentences_chinese(x_text, pad_word='<PAD>'):
 
 
 def build_vocab_chinese(x_text):
+    """
+    vocabulary_inv: a list of word in the order of frequency
+    vocabulary: a dict {index of vocabulary_inv: word, ...}
+    """
     word_counts = Counter(itertools.chain(*x_text))
     vocabulary_inv = [x[0] for x in word_counts.most_common()]
     vocabulary = {x: i for i, x in enumerate(vocabulary_inv)}
@@ -163,6 +174,9 @@ def build_vocab_chinese(x_text):
 
 
 def build_input_data_chinese(sentences, labels, vocabulary):
+    """
+    list -> ndarray
+    """
     x = np.array([[vocabulary[word] for word in sentence] for sentence in sentences])
     y = np.array(labels)
     return x, y
