@@ -138,12 +138,21 @@ def load_data_and_labels_chinese():
     x_text = [[word, word, word...], [word, word...], ...]
     y = [label, label...]
     """
+<<<<<<< HEAD
     dirs = ['./data/business.csv',
             './data/service.csv',
             './data/others.csv',
             './data/product.csv',
             './data/platform.csv']
 
+=======
+    dirs = ['./data/business.csv', 
+        './data/service.csv', 
+        './data/others.csv', 
+        './data/service.csv', 
+        './data/platform.csv']
+    
+>>>>>>> origin/master
     x_text = []
     y = []
 
