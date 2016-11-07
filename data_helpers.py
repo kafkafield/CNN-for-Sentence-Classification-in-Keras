@@ -138,21 +138,12 @@ def load_data_and_labels_chinese():
     x_text = [[word, word, word...], [word, word...], ...]
     y = [label, label...]
     """
-<<<<<<< HEAD
     dirs = ['./data/business.csv',
             './data/service.csv',
             './data/others.csv',
             './data/product.csv',
             './data/platform.csv']
 
-=======
-    dirs = ['./data/business.csv', 
-        './data/service.csv', 
-        './data/others.csv', 
-        './data/service.csv', 
-        './data/platform.csv']
-    
->>>>>>> origin/master
     x_text = []
     y = []
 
@@ -203,6 +194,12 @@ def build_vocab_chinese(x_text):
     vocabulary_inv: a list of word in the order of frequency
     vocabulary: a dict {index of vocabulary_inv: word, ...}
     """
+    dir = './data/business.csv'
+    with open(dir, 'rb') as f:
+        reader = csv.reader(f)
+        all_list = list(reader)
+    for sentence in all_list:
+        if  
     word_counts = Counter(itertools.chain(*x_text))
     vocabulary_inv = [x[0] for x in word_counts.most_common()]
     vocabulary = {x: i for i, x in enumerate(vocabulary_inv)}
