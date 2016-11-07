@@ -159,15 +159,17 @@ def load_data_and_labels_chinese():
             seq_list = jieba.cut(sentence[3])
             x_text.append(list(seq_list))
             y.append(label)
-    return x_text, y
+    dir = './data/business.csv'
+    all_list=load_sentences_in_xlsx_file(dir, 1)  # this method returns a list of raw comment
+    return x_text, y, all_list
 
 
-def pad_sentences_chinese(x_text, pad_word='<PAD>'):
+def pad_sentences_chinese(x_text, all_list, pad_word='<PAD>'):
     """
     x_text = [[word, word, ... <PAD>, <PAD>], ...]
     """
     pad_x_text = []
-    sequence_length = max(len(x) for x in x_text)
+    sequence_length = max(len(x) for x in all_list)
     for i in range(len(x_text)):
         x = x_text[i]
         padding = sequence_length - len(x)
@@ -189,18 +191,12 @@ def my_pad_sentences_chinese(x_text, pad_word='<PAD>'):
     return pad_x_text
 
 
-def build_vocab_chinese(x_text):
+def build_vocab_chinese(x_text, all_list):
     """
     vocabulary_inv: a list of word in the order of frequency
     vocabulary: a dict {index of vocabulary_inv: word, ...}
     """
-    dir = './data/business.csv'
-    with open(dir, 'rb') as f:
-        reader = csv.reader(f)
-        all_list = list(reader)
-    for sentence in all_list:
-        if  
-    word_counts = Counter(itertools.chain(*x_text))
+    word_counts = Counter(itertools.chain(*all_list))
     vocabulary_inv = [x[0] for x in word_counts.most_common()]
     vocabulary = {x: i for i, x in enumerate(vocabulary_inv)}
     return vocabulary, vocabulary_inv
@@ -236,10 +232,10 @@ def load_split_data_from_labeled_review_csv():
 
 
 def load_data_chinese():
-    sentences, labels = load_data_and_labels_chinese()
+    sentences, labels, all_list = load_data_and_labels_chinese()
     # sentences, labels = load_split_data_from_labeled_review_csv()
-    sentences_padded = pad_sentences_chinese(sentences)
-    vocabulary, vocabulary_inv = build_vocab_chinese(sentences_padded)
+    sentences_padded = pad_sentences_chinese(all_list, sentences)
+    vocabulary, vocabulary_inv = build_vocab_chinese(sentences_padded, all_list)
     x, y = build_input_data(sentences_padded, labels, vocabulary)
     return x, y, vocabulary, vocabulary_inv
 
